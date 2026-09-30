@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Game Zone</title>
+    <!-- Ultraviolet Scripts -->
+    <script src="/uv/uv.bundle.js"></script>
+    <script src="/uv/uv.config.js"></script>
+    <style>
+        body, html { margin: 0; padding: 0; height: 100%; overflow: hidden; background-color: #111; }
+        iframe { width: 100%; height: 100%; border: none; }
+    </style>
+</head>
+<body>
+
+    <iframe id="game-iframe" style="display: none;"></iframe>
+
+    <script>
+        window.addEventListener('load', async () => {
+            const gameIframe = document.getElementById('game-iframe');
+            
+            // Check if the browser supports Service Workers
+            if (!('serviceWorker' in navigator)) {
+                alert("Your browser does not support Service Workers. The proxy cannot run.");
+                return;
+            }
+
+            try {
+                // Register the Service WorkAer
+                await navigator.serviceWorker.register('/uv/uv.sw.js', {
+                    scope: __uv$config.prefix
+                });
+                
+                // Wait for the Service Worker to be fully ready
+                await navigator.serviceWorker.ready;
+                
+                // Encode and load Agar.io
+                const targetUrl = 'https://agar.io';
+                const encodedUrl = __uv$config.prefix + __uv$config.encodeUrl(targetUrl);
+                
+                gameIframe.src = encodedUrl;
+                gameIframe.style.display = 'block';
+                
+            } catch (error) {
+                console.error("Failed to register Ultraviolet:", error);
+                alert("Failed to load the game proxy. Check the Developer Console (F12) for details.");
+            }
+        });
+    </script>
+</body>
+</html>
